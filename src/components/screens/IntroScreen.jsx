@@ -83,7 +83,7 @@ export default function IntroScreen({ onNext }) {
 
         <motion.img
           loading="lazy"
-          src="/gifs/intro.gif"
+          src="/gifs/intro.jpg"
           alt="Cute"
           className="w-26 md:w-32 relative z-10"
           initial={{ scale: 0.7, opacity: 0 }}
@@ -97,7 +97,7 @@ export default function IntroScreen({ onNext }) {
         <h1
           className="shimmer-text text-2xl md:text-3xl font-semibold leading-tight will-change-transform"
         >
-          A Cutiepie was born today, 21 years ago!
+          A Princess was born today, 19 years ago!
         </h1>
 
         <motion.p
