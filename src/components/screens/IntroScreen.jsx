@@ -65,10 +65,10 @@ export default function IntroScreen({ onNext }) {
         </motion.div>
       ))}
 
-      {/* Illustration box - Width reduced to 75% and centered */}
+      {/* Illustration box - Adjusted for centered square image */}
       <motion.div
         variants={childVariants}
-        className="relative h-44 md:h-52 w-[75%] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[40px] flex items-end justify-center shadow-inner overflow-hidden"
+        className="relative h-44 md:h-52 w-[85%] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[40px] flex items-center justify-center shadow-inner overflow-hidden"
       >
         {/* Inner glow highlight */}
         <motion.div
@@ -77,7 +77,7 @@ export default function IntroScreen({ onNext }) {
           transition={{ duration: 1.2, delay: 0.5 }}
           className="absolute inset-0 rounded-[40px] pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse at 50% 80%, rgba(255,180,200,0.25), transparent 65%)",
+            background: "radial-gradient(ellipse at 50% 50%, rgba(255,180,200,0.25), transparent 70%)",
           }}
         />
 
@@ -85,7 +85,8 @@ export default function IntroScreen({ onNext }) {
           loading="lazy"
           src="/gifs/intro.jpg"
           alt="Cute"
-          className="w-26 md:w-32 relative z-10"
+          // Aspect-square aur fixed height/width se 1:1 ratio aayega
+          className="h-[80%] aspect-square object-cover rounded-2xl relative z-10 shadow-sm"
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
@@ -95,13 +96,13 @@ export default function IntroScreen({ onNext }) {
       {/* Text block */}
       <motion.div variants={childVariants} className="text-center px-2">
         <h1
-          className="shimmer-text text-2xl md:text-3xl font-semibold leading-tight will-change-transform"
+          className="shimmer-text text-2xl md:text-3xl font-semibold leading-tight"
         >
           A Princess was born today, 19 years ago!
         </h1>
 
         <motion.p
-          className="mt-4 text-foreground will-change-transform"
+          className="mt-4 text-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.7 }}
@@ -111,17 +112,13 @@ export default function IntroScreen({ onNext }) {
       </motion.div>
 
       {/* CTA Button */}
-      <motion.div
-        variants={childVariants}
-        className="mt-4"
-      >
+      <motion.div variants={childVariants} className="mt-4">
         <Button
           onClick={() => onNext?.()}
           className="bg-[#f1caeb] text-primary relative overflow-hidden group"
         >
-          {/* Button shine on hover */}
           <span
-            className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
+            className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500"
             style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)" }}
           />
           <Gift size={20} className="relative z-10" />
