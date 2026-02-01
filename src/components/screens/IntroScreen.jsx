@@ -65,10 +65,10 @@ export default function IntroScreen({ onNext }) {
         </motion.div>
       ))}
 
-      {/* Illustration box */}
+      {/* Illustration box — compact */}
       <motion.div
         variants={childVariants}
-        className="relative h-44 md:h-52 bg-linear-to-b from-white/80 to-pink-200 w-full rounded-[40px] flex items-end justify-center shadow-inner overflow-hidden"
+        className="relative h-36 md:h-40 bg-linear-to-b from-white/80 to-pink-200 w-full rounded-[40px] flex items-center justify-center shadow-inner overflow-hidden"
       >
         {/* Inner glow highlight */}
         <motion.div
@@ -83,9 +83,9 @@ export default function IntroScreen({ onNext }) {
 
         <motion.img
           loading="lazy"
-          src="/gifs/intro.jpg"
+          src="/gifs/intro.gif"
           alt="Cute"
-          className="w-26 md:w-32 relative z-10"
+          className="relative z-10 h-full w-full object-cover rounded-[40px]"
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
