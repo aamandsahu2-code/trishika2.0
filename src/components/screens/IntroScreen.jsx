@@ -65,10 +65,10 @@ export default function IntroScreen({ onNext }) {
         </motion.div>
       ))}
 
-      {/* Illustration box */}
+      {/* Illustration box - Width reduced to 75% and centered */}
       <motion.div
         variants={childVariants}
-        className="relative h-44 md:h-52 bg-linear-to-b from-white/80 to-pink-200 w-full rounded-[40px] flex items-end justify-center shadow-inner overflow-hidden"
+        className="relative h-44 md:h-52 w-[75%] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[40px] flex items-end justify-center shadow-inner overflow-hidden"
       >
         {/* Inner glow highlight */}
         <motion.div
