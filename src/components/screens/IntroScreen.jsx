@@ -83,7 +83,7 @@ export default function IntroScreen({ onNext }) {
 
         <motion.img
           loading="lazy"
-          src="/gifs/intro.gif"
+          src="/gifs/intro.jpg"
           alt="Cute"
           className="w-26 md:w-32 relative z-10"
           initial={{ scale: 0.7, opacity: 0 }}
