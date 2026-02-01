@@ -68,7 +68,7 @@ export default function IntroScreen({ onNext }) {
       {/* Illustration box */}
       <motion.div
         variants={childVariants}
-        className="relative h-44 md:h-52 bg-linear-to-b from-white/80 to-pink-200 w-full rounded-[40px] flex items-end justify-center shadow-inner overflow-hidden"
+        className="relative h-32 md:h-40 bg-linear-to-b from-white/80 to-pink-200 w-full rounded-[40px] flex items-end justify-center shadow-inner overflow-hidden"
       >
         {/* Inner glow highlight */}
         <motion.div
