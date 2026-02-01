@@ -125,7 +125,7 @@ export default function CakeScreen({ onNext }) {
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: lit ? 0.45 : 0 }}
       >
         <span className={lit ? "shimmer-text" : ""} style={lit ? {} : { color: "var(--secondary)" }}>
-          Happy Birthday, Cutiepiee!
+          Happy Birthday, Princess!
         </span>
       </motion.div>
 
