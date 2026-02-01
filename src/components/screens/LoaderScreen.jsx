@@ -1,6 +1,7 @@
 "use client"
 
-import { motion, useEffect } from "framer-motion"
+import { useEffect } from "react"
+import { motion } from "framer-motion"
 
 export default function LoaderScreen({ onDone }) {
 
