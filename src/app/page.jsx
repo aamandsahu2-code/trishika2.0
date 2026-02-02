@@ -82,10 +82,11 @@ function GlowOrbs() {
   )
 }
 
-/* ── Fireworks Screen Component (inline) ── */
+/* ── Enhanced Fireworks Screen ── */
 function FireworksScreen({ onNext }) {
   const canvasRef = useRef(null)
   const [showButton, setShowButton] = useState(false)
+  const [bgGlow, setBgGlow] = useState({ r: 0, g: 0, b: 0, intensity: 0 })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -97,36 +98,53 @@ function FireworksScreen({ onNext }) {
 
     const particles = []
     const rockets = []
+    const bursts = []
 
     class Particle {
-      constructor(x, y, color) {
+      constructor(x, y, angle, speed, color, size) {
         this.x = x
         this.y = y
         this.color = color
-        this.velocity = {
-          x: (Math.random() - 0.5) * 8,
-          y: (Math.random() - 0.5) * 8
-        }
+        const rad = (angle * Math.PI) / 180
+        this.vx = Math.cos(rad) * speed
+        this.vy = Math.sin(rad) * speed
         this.alpha = 1
-        this.decay = Math.random() * 0.015 + 0.015
-        this.gravity = 0.3
-        this.size = Math.random() * 3 + 1
+        this.decay = 0.008 + Math.random() * 0.007
+        this.gravity = 0.15
+        this.size = size || (2 + Math.random() * 2)
+        this.brightness = 1
       }
 
       update() {
-        this.velocity.y += this.gravity
-        this.x += this.velocity.x
-        this.y += this.velocity.y
+        this.vy += this.gravity
+        this.x += this.vx
+        this.y += this.vy
+        this.vx *= 0.98
+        this.vy *= 0.98
         this.alpha -= this.decay
+        this.brightness = this.alpha
       }
 
       draw() {
         ctx.save()
         ctx.globalAlpha = this.alpha
+        
+        // Glow effect
+        ctx.shadowBlur = 15
+        ctx.shadowColor = this.color
+        
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
         ctx.fillStyle = this.color
         ctx.fill()
+        
+        // Bright center
+        ctx.globalAlpha = this.alpha * 0.6
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2)
+        ctx.fillStyle = '#ffffff'
+        ctx.fill()
+        
         ctx.restore()
       }
     }
@@ -137,12 +155,15 @@ function FireworksScreen({ onNext }) {
         this.y = canvas.height
         this.targetY = targetY
         this.color = color
-        this.speed = 4
+        this.speed = 5
         this.exploded = false
+        this.trail = []
       }
 
       update() {
         if (this.y > this.targetY) {
+          this.trail.push({ x: this.x, y: this.y, alpha: 1 })
+          if (this.trail.length > 10) this.trail.shift()
           this.y -= this.speed
         } else if (!this.exploded) {
           this.explode()
@@ -151,49 +172,117 @@ function FireworksScreen({ onNext }) {
       }
 
       explode() {
-        const particleCount = 80
+        const particleCount = 120
+        const burstRadius = 150 + Math.random() * 100
+        
+        // Create circular burst
         for (let i = 0; i < particleCount; i++) {
-          particles.push(new Particle(this.x, this.y, this.color))
+          const angle = (360 / particleCount) * i + Math.random() * 10
+          const speed = 2 + Math.random() * 4
+          particles.push(new Particle(this.x, this.y, angle, speed, this.color, 2.5 + Math.random() * 1.5))
         }
+        
+        // Add to bursts for background glow
+        bursts.push({ x: this.x, y: this.y, color: this.color, life: 1 })
       }
 
       draw() {
         if (!this.exploded) {
+          // Trail
+          this.trail.forEach((t, i) => {
+            ctx.save()
+            ctx.globalAlpha = (t.alpha * i) / this.trail.length
+            ctx.beginPath()
+            ctx.arc(t.x, t.y, 2, 0, Math.PI * 2)
+            ctx.fillStyle = this.color
+            ctx.fill()
+            ctx.restore()
+          })
+          
+          // Rocket head
+          ctx.save()
+          ctx.shadowBlur = 10
+          ctx.shadowColor = this.color
           ctx.beginPath()
           ctx.arc(this.x, this.y, 3, 0, Math.PI * 2)
           ctx.fillStyle = this.color
           ctx.fill()
+          ctx.restore()
         }
       }
     }
 
-    const colors = ['#ff0043', '#14fc56', '#1e7fff', '#e60aff', '#ffbf36', '#ffffff']
+    const colors = [
+      { hex: '#ff0043', rgb: { r: 255, g: 0, b: 67 } },
+      { hex: '#14fc56', rgb: { r: 20, g: 252, b: 86 } },
+      { hex: '#1e7fff', rgb: { r: 30, g: 127, b: 255 } },
+      { hex: '#e60aff', rgb: { r: 230, g: 10, b: 255 } },
+      { hex: '#ffbf36', rgb: { r: 255, g: 191, b: 54 } },
+      { hex: '#ff69b4', rgb: { r: 255, g: 105, b: 180 } },
+    ]
 
     function launchRocket() {
       const x = Math.random() * canvas.width
-      const targetY = Math.random() * canvas.height * 0.4 + 100
-      const color = colors[Math.floor(Math.random() * colors.length)]
-      rockets.push(new Rocket(x, targetY, color))
+      const targetY = 100 + Math.random() * canvas.height * 0.3
+      const colorObj = colors[Math.floor(Math.random() * colors.length)]
+      rockets.push(new Rocket(x, targetY, colorObj.hex))
     }
 
     const launchInterval = setInterval(() => {
-      if (Math.random() < 0.7) {
+      if (Math.random() < 0.6) {
         launchRocket()
       }
-    }, 400)
+    }, 500)
 
     setTimeout(() => {
       for (let i = 0; i < 3; i++) {
-        setTimeout(() => launchRocket(), i * 200)
+        setTimeout(() => launchRocket(), i * 250)
       }
     }, 300)
 
     setTimeout(() => setShowButton(true), 3500)
 
+    function updateBackgroundGlow() {
+      let totalR = 0, totalG = 0, totalB = 0, count = 0
+      
+      bursts.forEach(burst => {
+        const colorObj = colors.find(c => c.hex === burst.color)
+        if (colorObj && burst.life > 0) {
+          totalR += colorObj.rgb.r * burst.life
+          totalG += colorObj.rgb.g * burst.life
+          totalB += colorObj.rgb.b * burst.life
+          count++
+        }
+      })
+      
+      if (count > 0) {
+        setBgGlow({
+          r: Math.min(255, totalR / count),
+          g: Math.min(255, totalG / count),
+          b: Math.min(255, totalB / count),
+          intensity: Math.min(1, count / 3)
+        })
+      } else {
+        setBgGlow(prev => ({
+          ...prev,
+          intensity: Math.max(0, prev.intensity - 0.05)
+        }))
+      }
+    }
+
     function animate() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'
+      ctx.fillStyle = 'rgba(10, 0, 20, 0.2)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+      // Update bursts
+      for (let i = bursts.length - 1; i >= 0; i--) {
+        bursts[i].life -= 0.02
+        if (bursts[i].life <= 0) {
+          bursts.splice(i, 1)
+        }
+      }
+
+      // Update rockets
       for (let i = rockets.length - 1; i >= 0; i--) {
         rockets[i].update()
         rockets[i].draw()
@@ -202,6 +291,7 @@ function FireworksScreen({ onNext }) {
         }
       }
 
+      // Update particles
       for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update()
         particles[i].draw()
@@ -210,6 +300,7 @@ function FireworksScreen({ onNext }) {
         }
       }
 
+      updateBackgroundGlow()
       animationId = requestAnimationFrame(animate)
     }
 
@@ -230,7 +321,15 @@ function FireworksScreen({ onNext }) {
 
   return (
     <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 bg-black" style={{ width: '100%', height: '100%' }} />
+      {/* Dynamic background glow */}
+      <div 
+        className="absolute inset-0 transition-all duration-300"
+        style={{ 
+          backgroundColor: `rgba(${bgGlow.r}, ${bgGlow.g}, ${bgGlow.b}, ${bgGlow.intensity * 0.15})`,
+        }}
+      />
+      
+      <canvas ref={canvasRef} className="absolute inset-0" style={{ width: '100%', height: '100%' }} />
       
       <div className="relative z-10 flex flex-col items-center gap-6">
         <motion.div
@@ -261,11 +360,6 @@ function FireworksScreen({ onNext }) {
           </motion.div>
         )}
       </div>
-
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none opacity-20"
-        style={{ background: 'radial-gradient(circle, rgba(255,105,180,0.6), transparent 70%)', filter: 'blur(60px)', animation: 'orbPulse 3s ease-in-out infinite alternate' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none opacity-20"
-        style={{ background: 'radial-gradient(circle, rgba(30,127,255,0.6), transparent 70%)', filter: 'blur(60px)', animation: 'orbPulse 4s ease-in-out infinite alternate', animationDelay: '-2s' }} />
     </div>
   )
 }
