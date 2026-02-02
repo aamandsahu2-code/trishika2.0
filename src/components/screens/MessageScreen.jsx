@@ -2,9 +2,11 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Sparkles } from "lucide-react"
+import Button from "../Button"
 
 /* Word-by-word reveal for the message */
-const messageText = `Happy Birthday, Princess! You deserve all the happiness, love, and smiles in the world today and always. You have this special way of making everything around you brighter — your smile, your kindness, and the way you make people feel truly cared for. I hope your day is filled with laughter, surprises, and moments that make your heart happy. You're truly one of a kind, and I just want you to know how special you are. Keep being the amazing person you are, spreading joy wherever you go. Wishing you endless happiness, success, and all the sweet things life has to offer. 💗`
+const messageText = `Happy Birthday, Cutiepie! You deserve all the happiness, love, and smiles in the world today and always. You have this special way of making everything around you brighter — your smile, your kindness, and the way you make people feel truly cared for. I hope your day is filled with laughter, surprises, and moments that make your heart happy. You're truly one of a kind, and I just want you to know how special you are. Keep being the amazing person you are, spreading joy wherever you go. Wishing you endless happiness, success, and all the sweet things life has to offer. 💗`
 
 const words = messageText.split(" ")
 
@@ -20,7 +22,7 @@ const hearts = [
   { emoji: "💖", left: "75%", delay: 1.25 },
 ]
 
-export default function MessageScreen() {
+export default function MessageScreen({ onNext }) {
   const [opened, setOpened] = useState(false)
 
   return (
@@ -172,14 +174,14 @@ export default function MessageScreen() {
         ))}
       </AnimatePresence>
 
-      {/* Bottom sparkle accent */}
+      {/* Bottom sparkle accent + NEXT BUTTON */}
       <AnimatePresence>
         {opened && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.5 }}
-            className="text-center mt-1"
+            className="text-center mt-1 flex flex-col items-center gap-4"
           >
             <motion.span
               animate={{ scale: [1, 1.15, 1] }}
@@ -188,6 +190,25 @@ export default function MessageScreen() {
             >
               💖
             </motion.span>
+
+            {/* Next Button to Fireworks */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 2.5, ease: [0.34, 1.56, 0.64, 1] }}
+            >
+              <Button
+                onClick={onNext}
+                className="bg-gradient-to-r from-pink-400 to-purple-500 text-white relative overflow-hidden group"
+              >
+                <span
+                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                />
+                <Sparkles size={18} className="relative z-10" />
+                <span className="relative z-10">Let&apos;s Celebrate!</span>
+              </Button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
