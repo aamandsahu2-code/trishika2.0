@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import LoaderScreen from "@/components/screens/LoaderScreen"
 import IntroScreen from "@/components/screens/IntroScreen"
 import CakeScreen from "@/components/screens/CakeScreen"
+import FireworksScreen from "@/components/screens/FireworksScreen"
 import PhotosScreen from "@/components/screens/PhotosScreen"
 import MessageScreen from "@/components/screens/MessageScreen"
 
@@ -85,7 +86,7 @@ function ProgressDots({ current, total }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: current >= 1 ? 1 : 0 }}
+      animate={{ opacity: current >= 1 && current !== 3 ? 1 : 0 }}
       transition={{ duration: 0.6, delay: 0.4 }}
       className="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-50"
     >
@@ -111,7 +112,8 @@ export default function HomePage() {
     <LoaderScreen key="loader" onDone={() => setCurrentScreen(1)} />,
     <IntroScreen key="intro" onNext={() => setCurrentScreen(2)} />,
     <CakeScreen key="cake" onNext={() => setCurrentScreen(3)} />,
-    <PhotosScreen key="photos" onNext={() => setCurrentScreen(4)} />,
+    <FireworksScreen key="fireworks" onNext={() => setCurrentScreen(4)} />,
+    <PhotosScreen key="photos" onNext={() => setCurrentScreen(5)} />,
     <MessageScreen key="message" />,
   ]
 
@@ -147,9 +149,13 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen overflow-hidden relative" style={{ background: "var(--background)" }}>
-      {/* Ambient atmosphere */}
-      <GlowOrbs />
-      <AmbientParticles />
+      {/* Ambient atmosphere - hide on fireworks screen */}
+      {currentScreen !== 3 && (
+        <>
+          <GlowOrbs />
+          <AmbientParticles />
+        </>
+      )}
 
       {/* Main content */}
       <div className="relative z-10 flex min-h-screen items-center justify-center p-4 md:p-6">
@@ -167,13 +173,13 @@ export default function HomePage() {
         </AnimatePresence>
       </div>
 
-      {/* Progress dots (visible after loader) */}
-      <ProgressDots current={currentScreen} total={5} />
+      {/* Progress dots (visible after loader, hidden on fireworks) */}
+      <ProgressDots current={currentScreen} total={6} />
 
       {/* Watermark */}
       <motion.div
         initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
+        animate={{ x: 0, opacity: currentScreen === 3 ? 0 : 1 }}
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
