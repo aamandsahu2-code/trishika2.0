@@ -1,6 +1,7 @@
+```jsx
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import LoaderScreen from "@/components/screens/LoaderScreen"
 import IntroScreen from "@/components/screens/IntroScreen"
@@ -188,3 +189,4 @@ export default function HomePage() {
     </main>
   )
 }
+```
