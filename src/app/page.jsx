@@ -1,14 +1,12 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Sparkles } from "lucide-react"
 import LoaderScreen from "@/components/screens/LoaderScreen"
 import IntroScreen from "@/components/screens/IntroScreen"
 import CakeScreen from "@/components/screens/CakeScreen"
 import PhotosScreen from "@/components/screens/PhotosScreen"
 import MessageScreen from "@/components/screens/MessageScreen"
-import Button from "@/components/Button"
 
 /* ── Ambient particle config ── */
 const PARTICLE_COUNT = 18
@@ -82,294 +80,12 @@ function GlowOrbs() {
   )
 }
 
-/* ── Enhanced Fireworks Screen ── */
-function FireworksScreen({ onNext }) {
-  const canvasRef = useRef(null)
-  const [showButton, setShowButton] = useState(false)
-  const [bgGlow, setBgGlow] = useState({ r: 0, g: 0, b: 0, intensity: 0 })
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-
-    const particles = []
-    const rockets = []
-    const bursts = []
-
-    class Particle {
-      constructor(x, y, angle, speed, color, size) {
-        this.x = x
-        this.y = y
-        this.color = color
-        const rad = (angle * Math.PI) / 180
-        this.vx = Math.cos(rad) * speed
-        this.vy = Math.sin(rad) * speed
-        this.alpha = 1
-        this.decay = 0.008 + Math.random() * 0.007
-        this.gravity = 0.15
-        this.size = size || (2 + Math.random() * 2)
-        this.brightness = 1
-      }
-
-      update() {
-        this.vy += this.gravity
-        this.x += this.vx
-        this.y += this.vy
-        this.vx *= 0.98
-        this.vy *= 0.98
-        this.alpha -= this.decay
-        this.brightness = this.alpha
-      }
-
-      draw() {
-        ctx.save()
-        ctx.globalAlpha = this.alpha
-        
-        // Glow effect
-        ctx.shadowBlur = 15
-        ctx.shadowColor = this.color
-        
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-        ctx.fillStyle = this.color
-        ctx.fill()
-        
-        // Bright center
-        ctx.globalAlpha = this.alpha * 0.6
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2)
-        ctx.fillStyle = '#ffffff'
-        ctx.fill()
-        
-        ctx.restore()
-      }
-    }
-
-    class Rocket {
-      constructor(x, targetY, color) {
-        this.x = x
-        this.y = canvas.height
-        this.targetY = targetY
-        this.color = color
-        this.speed = 5
-        this.exploded = false
-        this.trail = []
-      }
-
-      update() {
-        if (this.y > this.targetY) {
-          this.trail.push({ x: this.x, y: this.y, alpha: 1 })
-          if (this.trail.length > 10) this.trail.shift()
-          this.y -= this.speed
-        } else if (!this.exploded) {
-          this.explode()
-          this.exploded = true
-        }
-      }
-
-      explode() {
-        const particleCount = 120
-        const burstRadius = 150 + Math.random() * 100
-        
-        // Create circular burst
-        for (let i = 0; i < particleCount; i++) {
-          const angle = (360 / particleCount) * i + Math.random() * 10
-          const speed = 2 + Math.random() * 4
-          particles.push(new Particle(this.x, this.y, angle, speed, this.color, 2.5 + Math.random() * 1.5))
-        }
-        
-        // Add to bursts for background glow
-        bursts.push({ x: this.x, y: this.y, color: this.color, life: 1 })
-      }
-
-      draw() {
-        if (!this.exploded) {
-          // Trail
-          this.trail.forEach((t, i) => {
-            ctx.save()
-            ctx.globalAlpha = (t.alpha * i) / this.trail.length
-            ctx.beginPath()
-            ctx.arc(t.x, t.y, 2, 0, Math.PI * 2)
-            ctx.fillStyle = this.color
-            ctx.fill()
-            ctx.restore()
-          })
-          
-          // Rocket head
-          ctx.save()
-          ctx.shadowBlur = 10
-          ctx.shadowColor = this.color
-          ctx.beginPath()
-          ctx.arc(this.x, this.y, 3, 0, Math.PI * 2)
-          ctx.fillStyle = this.color
-          ctx.fill()
-          ctx.restore()
-        }
-      }
-    }
-
-    const colors = [
-      { hex: '#ff0043', rgb: { r: 255, g: 0, b: 67 } },
-      { hex: '#14fc56', rgb: { r: 20, g: 252, b: 86 } },
-      { hex: '#1e7fff', rgb: { r: 30, g: 127, b: 255 } },
-      { hex: '#e60aff', rgb: { r: 230, g: 10, b: 255 } },
-      { hex: '#ffbf36', rgb: { r: 255, g: 191, b: 54 } },
-      { hex: '#ff69b4', rgb: { r: 255, g: 105, b: 180 } },
-    ]
-
-    function launchRocket() {
-      const x = Math.random() * canvas.width
-      const targetY = 100 + Math.random() * canvas.height * 0.3
-      const colorObj = colors[Math.floor(Math.random() * colors.length)]
-      rockets.push(new Rocket(x, targetY, colorObj.hex))
-    }
-
-    const launchInterval = setInterval(() => {
-      if (Math.random() < 0.6) {
-        launchRocket()
-      }
-    }, 500)
-
-    setTimeout(() => {
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => launchRocket(), i * 250)
-      }
-    }, 300)
-
-    setTimeout(() => setShowButton(true), 3500)
-
-    function updateBackgroundGlow() {
-      let totalR = 0, totalG = 0, totalB = 0, count = 0
-      
-      bursts.forEach(burst => {
-        const colorObj = colors.find(c => c.hex === burst.color)
-        if (colorObj && burst.life > 0) {
-          totalR += colorObj.rgb.r * burst.life
-          totalG += colorObj.rgb.g * burst.life
-          totalB += colorObj.rgb.b * burst.life
-          count++
-        }
-      })
-      
-      if (count > 0) {
-        setBgGlow({
-          r: Math.min(255, totalR / count),
-          g: Math.min(255, totalG / count),
-          b: Math.min(255, totalB / count),
-          intensity: Math.min(1, count / 3)
-        })
-      } else {
-        setBgGlow(prev => ({
-          ...prev,
-          intensity: Math.max(0, prev.intensity - 0.05)
-        }))
-      }
-    }
-
-    function animate() {
-      ctx.fillStyle = 'rgba(10, 0, 20, 0.2)'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      // Update bursts
-      for (let i = bursts.length - 1; i >= 0; i--) {
-        bursts[i].life -= 0.02
-        if (bursts[i].life <= 0) {
-          bursts.splice(i, 1)
-        }
-      }
-
-      // Update rockets
-      for (let i = rockets.length - 1; i >= 0; i--) {
-        rockets[i].update()
-        rockets[i].draw()
-        if (rockets[i].exploded && rockets[i].y < -10) {
-          rockets.splice(i, 1)
-        }
-      }
-
-      // Update particles
-      for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update()
-        particles[i].draw()
-        if (particles[i].alpha <= 0) {
-          particles.splice(i, 1)
-        }
-      }
-
-      updateBackgroundGlow()
-      animationId = requestAnimationFrame(animate)
-    }
-
-    let animationId = requestAnimationFrame(animate)
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      cancelAnimationFrame(animationId)
-      clearInterval(launchInterval)
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
-  return (
-    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden">
-      {/* Dynamic background glow */}
-      <div 
-        className="absolute inset-0 transition-all duration-300"
-        style={{ 
-          backgroundColor: `rgba(${bgGlow.r}, ${bgGlow.g}, ${bgGlow.b}, ${bgGlow.intensity * 0.15})`,
-        }}
-      />
-      
-      <canvas ref={canvasRef} className="absolute inset-0" style={{ width: '100%', height: '100%' }} />
-      
-      <div className="relative z-10 flex flex-col items-center gap-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-          className="text-center px-6"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg mb-3"
-            style={{ textShadow: '0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(255,105,180,0.3)' }}>
-            Let&apos;s Celebrate! 🎉
-          </h2>
-          <p className="text-lg md:text-xl text-white/90">Your special moments await...</p>
-        </motion.div>
-
-        {showButton && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
-          >
-            <Button onClick={onNext} className="bg-white/90 text-purple-600 hover:bg-white relative overflow-hidden group">
-              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
-                style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }} />
-              <Sparkles size={20} className="relative z-10" />
-              <span className="relative z-10">View Memories</span>
-            </Button>
-          </motion.div>
-        )}
-      </div>
-    </div>
-  )
-}
-
 /* ── Progress indicator dots ── */
 function ProgressDots({ current, total }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: current >= 1 && current !== 3 ? 1 : 0 }}
+      animate={{ opacity: current >= 1 ? 1 : 0 }}
       transition={{ duration: 0.6, delay: 0.4 }}
       className="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-50"
     >
@@ -395,39 +111,69 @@ export default function HomePage() {
     <LoaderScreen key="loader" onDone={() => setCurrentScreen(1)} />,
     <IntroScreen key="intro" onNext={() => setCurrentScreen(2)} />,
     <CakeScreen key="cake" onNext={() => setCurrentScreen(3)} />,
-    <FireworksScreen key="fireworks" onNext={() => setCurrentScreen(4)} />,
-    <PhotosScreen key="photos" onNext={() => setCurrentScreen(5)} />,
+    <PhotosScreen key="photos" onNext={() => setCurrentScreen(4)} />,
     <MessageScreen key="message" />,
   ]
 
+  /* staggered transition variants */
   const pageVariants = {
-    enter: { opacity: 0, scale: 0.94, filter: "blur(6px)", y: 18 },
-    visible: { opacity: 1, scale: 1, filter: "blur(0px)", y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-    exit: { opacity: 0, scale: 0.96, filter: "blur(3px)", y: -12, transition: { duration: 0.45, ease: [0.4, 0, 1, 1] } },
+    enter: {
+      opacity: 0,
+      scale: 0.94,
+      filter: "blur(6px)",
+      y: 18,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      filter: "blur(0px)",
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.96,
+      filter: "blur(3px)",
+      y: -12,
+      transition: {
+        duration: 0.45,
+        ease: [0.4, 0, 1, 1],
+      },
+    },
   }
 
   return (
     <main className="min-h-screen overflow-hidden relative" style={{ background: "var(--background)" }}>
-      {currentScreen !== 3 && (
-        <>
-          <GlowOrbs />
-          <AmbientParticles />
-        </>
-      )}
+      {/* Ambient atmosphere */}
+      <GlowOrbs />
+      <AmbientParticles />
 
+      {/* Main content */}
       <div className="relative z-10 flex min-h-screen items-center justify-center p-4 md:p-6">
         <AnimatePresence mode="wait">
-          <motion.div key={currentScreen} initial="enter" animate="visible" exit="exit" variants={pageVariants} className="flex items-center justify-center w-full">
+          <motion.div
+            key={currentScreen}
+            initial="enter"
+            animate="visible"
+            exit="exit"
+            variants={pageVariants}
+            className="flex items-center justify-center w-full"
+          >
             {screens[currentScreen]}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      <ProgressDots current={currentScreen} total={6} />
+      {/* Progress dots (visible after loader) */}
+      <ProgressDots current={currentScreen} total={5} />
 
+      {/* Watermark */}
       <motion.div
         initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: currentScreen === 3 ? 0 : 1 }}
+        animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
