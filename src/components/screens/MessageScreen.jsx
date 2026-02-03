@@ -2,38 +2,26 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Sparkles } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import Button from "../Button"
 
 const messageText = `Happy Birthday, Cutiepie! You deserve all the happiness, love, and smiles in the world today and always. You have this special way of making everything around you brighter — your smile, your kindness, and the way you make people feel truly cared for. I hope your day is filled with laughter, surprises, and moments that make your heart happy. You're truly one of a kind, and I just want you to know how special you are. Keep being the amazing person you are, spreading joy wherever you go. Wishing you endless happiness, success, and all the sweet things life has to offer. 💗`
 
 const words = messageText.split(" ")
 
-const hearts = [
-  { emoji: "💖", left: "8%",  delay: 0.6 },
-  { emoji: "💗", left: "25%", delay: 0.85 },
-  { emoji: "💓", left: "45%", delay: 0.7 },
-  { emoji: "💕", left: "65%", delay: 1.0 },
-  { emoji: "💘", left: "82%", delay: 0.75 },
-  { emoji: "❤️", left: "15%", delay: 1.15 },
-  { emoji: "💝", left: "55%", delay: 0.95 },
-  { emoji: "💖", left: "75%", delay: 1.25 },
-]
-
 export default function MessageScreen({ onNext }) {
   const [opened, setOpened] = useState(false)
-  const [showHearts, setShowHearts] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false)
 
   const handleCardClick = () => {
-    if (!opened) {
-      // Pehli baar open ho raha hai
-      setOpened(true)
-      setTimeout(() => setShowHearts(true), 500)
-    } else {
-      // Dobara close ho raha hai
-      setShowHearts(false)
-      setTimeout(() => setOpened(false), 300)
-    }
+    if (isAnimating) return
+    
+    setIsAnimating(true)
+    setOpened(!opened)
+    
+    setTimeout(() => {
+      setIsAnimating(false)
+    }, 600)
   }
 
   return (
@@ -41,32 +29,8 @@ export default function MessageScreen({ onNext }) {
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-[#fff8fc] p-7 rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-110 relative flex flex-col items-center gap-4 my-10 card-glow overflow-hidden"
+      className="bg-[#fff8fc] p-7 rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-110 relative flex flex-col items-center gap-6 my-10 card-glow overflow-hidden"
     >
-      {/* Floating decorative accents */}
-      {[
-        { emoji: "💌", top: "4%", left: "7%", delay: 0.15 },
-        { emoji: "✨", top: "5%", right: "8%", delay: 0.35 },
-        { emoji: "🌷", bottom: "10%", left: "5%", delay: 0.55 },
-        { emoji: "💐", bottom: "7%", right: "6%", delay: 0.45 },
-      ].map((d, i) => (
-        <motion.div
-          key={i}
-          className="absolute pointer-events-none text-base select-none"
-          style={{ top: d.top, left: d.left, right: d.right, bottom: d.bottom }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 0.4, scale: 1 }}
-          transition={{ duration: 0.6, delay: d.delay, ease: [0.34, 1.56, 0.64, 1] }}
-        >
-          <motion.span
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 3.6 + i * 0.35, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {d.emoji}
-          </motion.span>
-        </motion.div>
-      ))}
-
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -80,89 +44,83 @@ export default function MessageScreen({ onNext }) {
         <motion.p
           className="text-primary/60 text-sm mt-1"
           animate={{ opacity: opened ? 0 : 1 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.3 }}
         >
-          {opened ? "Tap to close" : "Tap to open"}
+          Tap to open
         </motion.p>
       </motion.div>
 
-      {/* Envelope card - NOW TOGGLEABLE */}
-      <motion.div
-        initial={{ opacity: 0, y: 16, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        onClick={handleCardClick}
-        className={`relative h-71.25 w-full rounded-[40px] overflow-hidden shadow-inner cursor-pointer transition-all bg-linear-to-b from-white/80 to-pink-200 flex items-center justify-center max-w-71.25 ${!opened ? "hover:scale-[1.015]" : ""}`}
-        style={{ transition: "transform 0.3s ease" }}
-      >
-        {/* Cover (envelope) - TOGGLE BASED ON opened STATE */}
-        <AnimatePresence>
-          {!opened && (
-            <motion.div
-              className="cover"
-              style={{ 
-                background: "url('/images/KD NOPE.jpg') no-repeat center / cover",
-                zIndex: 10 
-              }}
-              initial={{ opacity: 1, scale: 1 }}
-              exit={{
-                opacity: 0,
-                scale: 1.08,
-                filter: "blur(2px)",
-              }}
-              transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-            >
-              {/* Envelope icon hint */}
-              <motion.div
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="text-4xl select-none"
-              >
-                💌
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* CARD CONTAINER WITH SLIDE ANIMATION */}
+      <div className="relative w-full flex flex-col items-center">
+        {/* ENVELOPE CARD - SLIDES LEFT WHEN OPENING */}
+        <motion.div
+          initial={{ x: 0, opacity: 1 }}
+          animate={{ 
+            x: opened ? -400 : 0,
+            opacity: opened ? 0 : 1,
+            scale: opened ? 0.9 : 1
+          }}
+          transition={{ 
+            duration: 0.6, 
+            ease: "easeInOut",
+            opacity: { duration: 0.4 }
+          }}
+          onClick={handleCardClick}
+          className="relative h-71.25 w-full max-w-71.25 rounded-[40px] overflow-hidden shadow-inner cursor-pointer bg-linear-to-b from-white/80 to-pink-200 flex items-center justify-center"
+          style={{ 
+            backgroundImage: "url('/images/KD NOPE.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}
+        >
+          {/* NO EMOJI - PURE IMAGE ONLY */}
+        </motion.div>
 
-        {/* Message content - TOGGLE BASED ON opened STATE */}
-        <AnimatePresence>
+        {/* MESSAGE CONTENT - SLIDES IN FROM RIGHT WHEN OPENING */}
+        <motion.div
+          initial={{ x: 400, opacity: 0 }}
+          animate={{ 
+            x: opened ? 0 : 400,
+            opacity: opened ? 1 : 0,
+            scale: opened ? 1 : 0.9
+          }}
+          transition={{ 
+            duration: 0.6, 
+            ease: "easeInOut",
+            delay: opened ? 0.2 : 0
+          }}
+          onClick={handleCardClick}
+          className="absolute top-0 h-71.25 w-full max-w-71.25 rounded-[40px] overflow-hidden shadow-inner cursor-pointer bg-linear-to-b from-white/80 to-pink-200"
+        >
+          {/* Message content */}
+          <div className="relative px-6 h-full overflow-y-auto text-foreground leading-relaxed pt-8 pb-6">
+            <div className="flex flex-wrap gap-x-1.5 gap-y-2">
+              {words.map((word, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ 
+                    opacity: opened ? 1 : 0, 
+                    y: opened ? 0 : 10 
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    delay: opened ? 0.3 + (i * 0.02) : 0,
+                    ease: "easeOut"
+                  }}
+                  className="will-change-transform"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Inner glow */}
           {opened && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="relative px-6 h-56 overflow-y-auto text-foreground leading-relaxed"
-            >
-              <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                {words.map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: i * 0.02,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    className="will-change-transform"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Inner glow - TOGGLE BASED ON opened STATE */}
-        <AnimatePresence>
-          {opened && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
               className="absolute inset-0 pointer-events-none rounded-[40px]"
               style={{
@@ -170,68 +128,86 @@ export default function MessageScreen({ onNext }) {
               }}
             />
           )}
-        </AnimatePresence>
+        </motion.div>
+      </div>
+
+      {/* NEXT BUTTON - ALWAYS VISIBLE WITH ANIMATION */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="mt-4"
+      >
+        <Button
+          onClick={onNext}
+          className="bg-gradient-to-r from-pink-400 to-purple-500 text-white relative overflow-hidden group px-10"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <motion.span
+            animate={{ 
+              x: [0, 3, 0]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
+            style={{ 
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" 
+            }}
+          />
+          
+          <motion.span
+            animate={{ 
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="relative z-10 flex items-center gap-2"
+          >
+            <span className="relative z-10">Next</span>
+            <ChevronRight 
+              size={18} 
+              className="relative z-10"
+            />
+          </motion.span>
+          
+          {/* Pulsing glow effect */}
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            animate={{
+              boxShadow: [
+                "0 0 0px rgba(255, 107, 138, 0)",
+                "0 0 20px rgba(255, 107, 138, 0.5)",
+                "0 0 0px rgba(255, 107, 138, 0)"
+              ]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </Button>
       </motion.div>
 
-      {/* Floating hearts - ONLY WHEN opened AND showHearts */}
-      <AnimatePresence>
-        {showHearts && hearts.map((h, i) => (
-          <motion.div
-            key={i}
-            className="absolute pointer-events-none select-none"
-            style={{ left: h.left, bottom: "-10px", fontSize: 18 + (i % 3) * 6 }}
-            initial={{ opacity: 0, y: 0, scale: 0 }}
-            animate={{ opacity: [0, 1, 1, 0], y: [-200 - Math.random() * 80], scale: [0, 1.2, 1, 0.6] }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 2.8,
-              delay: h.delay,
-              ease: "easeOut",
-              times: [0, 0.15, 0.7, 1],
-            }}
-          >
-            {h.emoji}
-          </motion.div>
-        ))}
-      </AnimatePresence>
-
-      {/* Next button - ALWAYS VISIBLE BUT CONDITIONAL */}
+      {/* INSTRUCTIONS TEXT */}
       <AnimatePresence>
         {opened && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, delay: 1.5 }}
-            className="text-center mt-1 flex flex-col items-center gap-4"
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="text-primary/60 text-sm"
           >
-            <motion.span
-              animate={{ scale: [1, 1.15, 1] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-              className="text-pink-400 heartbeat inline-block"
-            >
-              💖
-            </motion.span>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.6, delay: 2.5, ease: [0.34, 1.56, 0.64, 1] }}
-            >
-              <Button
-                onClick={onNext}
-                className="bg-gradient-to-r from-pink-400 to-purple-500 text-white relative overflow-hidden group"
-              >
-                <span
-                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
-                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
-                />
-                <Sparkles size={18} className="relative z-10" />
-                <span className="relative z-10">Let&apos;s Celebrate!</span>
-              </Button>
-            </motion.div>
-          </motion.div>
+            Tap message to close
+          </motion.p>
         )}
       </AnimatePresence>
     </motion.div>
