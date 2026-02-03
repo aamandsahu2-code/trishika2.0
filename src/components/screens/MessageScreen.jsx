@@ -93,27 +93,25 @@ export default function MessageScreen({ onNext }) {
       >
         {/* Cover (envelope) */}
         <AnimatePresence>
-          {!opened && (
-            <motion.div
-              className="cover"
-              style={{ background: "#ffedea", zIndex: 10 }}
-              exit={{
-                opacity: 0,
-                scale: 1.08,
-                filter: "blur(2px)",
-              }}
-              transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-            >
-              {/* Envelope icon hint */}
-              <motion.div
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="text-4xl select-none"
-              >
-                💌
-              </motion.div>
-            </motion.div>
-          )}
+         {!opened && (
+  <motion.div
+    className="cover"
+    style={{ 
+      background: "url('/images/KD NOPE.jpg') no-repeat center / cover",
+      zIndex: 10 
+    }}
+    // ... rest of the code
+  >
+    <motion.div
+      animate={{ scale: [1, 1.08, 1] }}
+      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      className="text-4xl select-none"
+    >
+      {/* Optional: Emoji hide kar sakte hain */}
+      {/* 💌 */}
+    </motion.div>
+  </motion.div>
+)}
         </AnimatePresence>
 
         {/* Message content — word-by-word stagger */}
