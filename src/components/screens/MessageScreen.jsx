@@ -11,18 +11,6 @@ const words = messageText.split(" ")
 
 export default function MessageScreen({ onNext }) {
   const [opened, setOpened] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
-
-  const handleCardClick = () => {
-    if (isAnimating) return
-    
-    setIsAnimating(true)
-    setOpened(!opened)
-    
-    setTimeout(() => {
-      setIsAnimating(false)
-    }, 600)
-  }
 
   return (
     <motion.div
@@ -50,47 +38,48 @@ export default function MessageScreen({ onNext }) {
         </motion.p>
       </motion.div>
 
-      {/* CARD CONTAINER WITH SLIDE ANIMATION */}
-      <div className="relative w-full flex flex-col items-center">
-        {/* ENVELOPE CARD - SLIDES LEFT WHEN OPENING */}
+      {/* CARD SLIDE CONTAINER - FIXED SIZE */}
+      <div className="relative h-71.25 w-full max-w-71.25">
+        
+        {/* CARD (IMAGE) - SIRF YEH LEFT SLIDE HOGI */}
         <motion.div
           initial={{ x: 0, opacity: 1 }}
           animate={{ 
-            x: opened ? -400 : 0,
-            opacity: opened ? 0 : 1,
-            scale: opened ? 0.9 : 1
+            x: opened ? -300 : 0,
+            opacity: opened ? 0 : 1
           }}
           transition={{ 
-            duration: 0.6, 
-            ease: "easeInOut",
-            opacity: { duration: 0.4 }
+            duration: 0.5,
+            ease: "easeInOut" 
           }}
-          onClick={handleCardClick}
-          className="relative h-71.25 w-full max-w-71.25 rounded-[40px] overflow-hidden shadow-inner cursor-pointer bg-linear-to-b from-white/80 to-pink-200 flex items-center justify-center"
+          onClick={() => setOpened(true)}
+          className="absolute top-0 left-0 h-full w-full rounded-[40px] overflow-hidden shadow-inner cursor-pointer"
           style={{ 
             backgroundImage: "url('/images/KD NOPE.jpg')",
             backgroundSize: "cover",
-            backgroundPosition: "center"
+            backgroundPosition: "center",
+            zIndex: 10
           }}
         >
-          {/* NO EMOJI - PURE IMAGE ONLY */}
+          {/* SIRF IMAGE - NO EMOJI */}
         </motion.div>
 
-        {/* MESSAGE CONTENT - SLIDES IN FROM RIGHT WHEN OPENING */}
+        {/* MESSAGE BOX - SIRF YEH RIGHT SE SLIDE HOGI */}
         <motion.div
-          initial={{ x: 400, opacity: 0 }}
+          initial={{ x: 300, opacity: 0 }}
           animate={{ 
-            x: opened ? 0 : 400,
-            opacity: opened ? 1 : 0,
-            scale: opened ? 1 : 0.9
+            x: opened ? 0 : 300,
+            opacity: opened ? 1 : 0
           }}
           transition={{ 
-            duration: 0.6, 
-            ease: "easeInOut",
-            delay: opened ? 0.2 : 0
+            duration: 0.5,
+            ease: "easeInOut" 
           }}
-          onClick={handleCardClick}
-          className="absolute top-0 h-71.25 w-full max-w-71.25 rounded-[40px] overflow-hidden shadow-inner cursor-pointer bg-linear-to-b from-white/80 to-pink-200"
+          onClick={() => setOpened(false)}
+          className="absolute top-0 left-0 h-full w-full rounded-[40px] overflow-hidden shadow-inner cursor-pointer bg-linear-to-b from-white/80 to-pink-200"
+          style={{ 
+            zIndex: opened ? 20 : 5 
+          }}
         >
           {/* Message content */}
           <div className="relative px-6 h-full overflow-y-auto text-foreground leading-relaxed pt-8 pb-6">
@@ -98,15 +87,11 @@ export default function MessageScreen({ onNext }) {
               {words.map((word, i) => (
                 <motion.span
                   key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ 
-                    opacity: opened ? 1 : 0, 
-                    y: opened ? 0 : 10 
-                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: opened ? 1 : 0 }}
                   transition={{
                     duration: 0.3,
-                    delay: opened ? 0.3 + (i * 0.02) : 0,
-                    ease: "easeOut"
+                    delay: opened ? 0.3 + (i * 0.02) : 0
                   }}
                   className="will-change-transform"
                 >
@@ -117,18 +102,22 @@ export default function MessageScreen({ onNext }) {
           </div>
           
           {/* Inner glow */}
-          {opened && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              className="absolute inset-0 pointer-events-none rounded-[40px]"
-              style={{
-                background: "radial-gradient(ellipse at 50% 20%, rgba(255,180,200,0.18), transparent 60%)",
-              }}
-            />
-          )}
+          <AnimatePresence>
+            {opened && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0 pointer-events-none rounded-[40px]"
+                style={{
+                  background: "radial-gradient(ellipse at 50% 20%, rgba(255,180,200,0.18), transparent 60%)",
+                }}
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
+        
       </div>
 
       {/* NEXT BUTTON - ALWAYS VISIBLE WITH ANIMATION */}
@@ -141,8 +130,6 @@ export default function MessageScreen({ onNext }) {
         <Button
           onClick={onNext}
           className="bg-gradient-to-r from-pink-400 to-purple-500 text-white relative overflow-hidden group px-10"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
           <motion.span
             animate={{ 
@@ -159,23 +146,10 @@ export default function MessageScreen({ onNext }) {
             }}
           />
           
-          <motion.span
-            animate={{ 
-              scale: [1, 1.1, 1]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-            className="relative z-10 flex items-center gap-2"
-          >
-            <span className="relative z-10">Next</span>
-            <ChevronRight 
-              size={18} 
-              className="relative z-10"
-            />
-          </motion.span>
+          <span className="relative z-10 flex items-center gap-2">
+            <span>Next</span>
+            <ChevronRight size={18} />
+          </span>
           
           {/* Pulsing glow effect */}
           <motion.div
@@ -196,7 +170,7 @@ export default function MessageScreen({ onNext }) {
         </Button>
       </motion.div>
 
-      {/* INSTRUCTIONS TEXT */}
+      {/* INSTRUCTIONS TEXT WHEN MESSAGE OPEN */}
       <AnimatePresence>
         {opened && (
           <motion.p
