@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ChevronRight } from "lucide-react"
 import Button from "../Button"
 
-const messageText = `Happy Birthday, Cutiepie! You deserve all the happiness, love, and smiles in the world today and always. You have this special way of making everything around you brighter — your smile, your kindness, and the way you make people feel truly cared for. I hope your day is filled with laughter, surprises, and moments that make your heart happy. You're truly one of a kind, and I just want you to know how special you are. Keep being the amazing person you are, spreading joy wherever you go. Wishing you endless happiness, success, and all the sweet things life has to offer. 💗`
+const messageText = "Happy Birthday, Princess!
+You deserve all the happiness and smiles in the world today. You have a truly special way of making everything around you brighter just by being yourself. I hope your day is filled with laughter, surprises, and all the things that make your heart happy.
+Keep being the amazing person you are and spreading joy wherever you go. Wishing you endless success and a year as wonderful as you are! ✨"`
 
 const words = messageText.split(" ")
 
@@ -172,20 +174,7 @@ export default function MessageScreen({ onNext }) {
         </Button>
       </motion.div>
 
-      {/* INSTRUCTIONS TEXT */}
-      <AnimatePresence>
-        {opened && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="text-primary/60 text-sm"
-          >
-            Tap message to close
-          </motion.p>
-        )}
-      </AnimatePresence>
+      {/* "Tap message to close" TEXT REMOVED - Kuch nahi hai yahan */}
     </motion.div>
   )
 }
