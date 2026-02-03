@@ -38,14 +38,14 @@ export default function MessageScreen({ onNext }) {
         </motion.p>
       </motion.div>
 
-      {/* CARD SLIDE CONTAINER - FIXED SIZE */}
-      <div className="relative h-71.25 w-full max-w-71.25">
+      {/* BOX CONTAINER - FIXED SIZE, NO ANIMATION */}
+      <div className="relative h-71.25 w-full max-w-71.25 rounded-[40px] overflow-hidden shadow-inner bg-linear-to-b from-white/80 to-pink-200">
         
-        {/* CARD (IMAGE) - SIRF YEH LEFT SLIDE HOGI */}
+        {/* CARD (IMAGE) - SLIDES LEFT WHEN CLICKED */}
         <motion.div
-          initial={{ x: 0, opacity: 1 }}
+          initial={{ x: 0 }}
           animate={{ 
-            x: opened ? -300 : 0,
+            x: opened ? -280 : 0,
             opacity: opened ? 0 : 1
           }}
           transition={{ 
@@ -53,7 +53,7 @@ export default function MessageScreen({ onNext }) {
             ease: "easeInOut" 
           }}
           onClick={() => setOpened(true)}
-          className="absolute top-0 left-0 h-full w-full rounded-[40px] overflow-hidden shadow-inner cursor-pointer"
+          className="absolute top-0 left-0 h-full w-full cursor-pointer"
           style={{ 
             backgroundImage: "url('/images/KD NOPE.jpg')",
             backgroundSize: "cover",
@@ -61,37 +61,39 @@ export default function MessageScreen({ onNext }) {
             zIndex: 10
           }}
         >
-          {/* SIRF IMAGE - NO EMOJI */}
+          {/* SIRF IMAGE */}
         </motion.div>
 
-        {/* MESSAGE BOX - SIRF YEH RIGHT SE SLIDE HOGI */}
+        {/* MESSAGE - HIDDEN BY DEFAULT, SHOWS WHEN CARD SLIDES */}
         <motion.div
-          initial={{ x: 300, opacity: 0 }}
+          initial={{ opacity: 0 }}
           animate={{ 
-            x: opened ? 0 : 300,
             opacity: opened ? 1 : 0
           }}
           transition={{ 
-            duration: 0.5,
-            ease: "easeInOut" 
+            duration: 0.4,
+            delay: opened ? 0.2 : 0
           }}
           onClick={() => setOpened(false)}
-          className="absolute top-0 left-0 h-full w-full rounded-[40px] overflow-hidden shadow-inner cursor-pointer bg-linear-to-b from-white/80 to-pink-200"
+          className="absolute top-0 left-0 h-full w-full cursor-pointer p-6"
           style={{ 
             zIndex: opened ? 20 : 5 
           }}
         >
           {/* Message content */}
-          <div className="relative px-6 h-full overflow-y-auto text-foreground leading-relaxed pt-8 pb-6">
+          <div className="h-full overflow-y-auto text-foreground leading-relaxed">
             <div className="flex flex-wrap gap-x-1.5 gap-y-2">
               {words.map((word, i) => (
                 <motion.span
                   key={i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: opened ? 1 : 0 }}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ 
+                    opacity: opened ? 1 : 0,
+                    y: opened ? 0 : 5
+                  }}
                   transition={{
                     duration: 0.3,
-                    delay: opened ? 0.3 + (i * 0.02) : 0
+                    delay: opened ? 0.4 + (i * 0.02) : 0
                   }}
                   className="will-change-transform"
                 >
@@ -106,12 +108,12 @@ export default function MessageScreen({ onNext }) {
             {opened && (
               <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={{ opacity: 0.3 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.8 }}
-                className="absolute inset-0 pointer-events-none rounded-[40px]"
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 pointer-events-none"
                 style={{
-                  background: "radial-gradient(ellipse at 50% 20%, rgba(255,180,200,0.18), transparent 60%)",
+                  background: "radial-gradient(ellipse at 50% 20%, rgba(255,180,200,0.25), transparent 60%)",
                 }}
               />
             )}
@@ -120,7 +122,7 @@ export default function MessageScreen({ onNext }) {
         
       </div>
 
-      {/* NEXT BUTTON - ALWAYS VISIBLE WITH ANIMATION */}
+      {/* NEXT BUTTON - ALWAYS VISIBLE */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -170,7 +172,7 @@ export default function MessageScreen({ onNext }) {
         </Button>
       </motion.div>
 
-      {/* INSTRUCTIONS TEXT WHEN MESSAGE OPEN */}
+      {/* INSTRUCTIONS TEXT */}
       <AnimatePresence>
         {opened && (
           <motion.p
