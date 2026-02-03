@@ -84,11 +84,13 @@ function GlowOrbs() {
 function BirthdayFireworksScreen() {
   const trailsCanvasRef = useRef(null)
   const mainCanvasRef = useRef(null)
+  const containerRef = useRef(null)
 
   useEffect(() => {
     const trailsCanvas = trailsCanvasRef.current
     const mainCanvas = mainCanvasRef.current
-    if (!trailsCanvas || !mainCanvas) return
+    const container = containerRef.current
+    if (!trailsCanvas || !mainCanvas || !container) return
 
     const trailsCtx = trailsCanvas.getContext('2d')
     const mainCtx = mainCanvas.getContext('2d')
@@ -223,6 +225,14 @@ function BirthdayFireworksScreen() {
       fireworks.push(new Firework(x, y, targetX, targetY))
     }
 
+    function launchFireworkAt(clientX, clientY) {
+      const x = Math.random() * width
+      const y = height
+      const targetX = clientX
+      const targetY = clientY
+      fireworks.push(new Firework(x, y, targetX, targetY))
+    }
+
     function loop() {
       trailsCtx.globalCompositeOperation = 'source-over'
       trailsCtx.fillStyle = 'rgba(0, 0, 0, 0.12)'
@@ -231,7 +241,7 @@ function BirthdayFireworksScreen() {
 
       mainCtx.clearRect(0, 0, width, height)
 
-      if (Math.random() < 0.025) {
+      if (Math.random() < 0.03) {
         launchRandomFirework()
       }
 
@@ -248,9 +258,24 @@ function BirthdayFireworksScreen() {
       animationId = requestAnimationFrame(loop)
     }
 
+    // Click handler
+    const handleClick = (e) => {
+      launchFireworkAt(e.clientX, e.clientY)
+    }
+
+    // Touch handler for mobile
+    const handleTouch = (e) => {
+      e.preventDefault()
+      const touch = e.touches[0] || e.changedTouches[0]
+      launchFireworkAt(touch.clientX, touch.clientY)
+    }
+
+    container.addEventListener('click', handleClick)
+    container.addEventListener('touchstart', handleTouch)
+
     // Initial fireworks burst
-    for (let i = 0; i < 4; i++) {
-      setTimeout(() => launchRandomFirework(), i * 600)
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => launchRandomFirework(), i * 500)
     }
 
     let animationId = requestAnimationFrame(loop)
@@ -266,15 +291,17 @@ function BirthdayFireworksScreen() {
     return () => {
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', handleResize)
+      container.removeEventListener('click', handleClick)
+      container.removeEventListener('touchstart', handleTouch)
     }
   }, [])
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black">
-      <canvas ref={trailsCanvasRef} className="absolute inset-0" style={{ mixBlendMode: 'lighten' }} />
-      <canvas ref={mainCanvasRef} className="absolute inset-0" style={{ mixBlendMode: 'lighten' }} />
+    <div ref={containerRef} className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black cursor-pointer">
+      <canvas ref={trailsCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'lighten' }} />
+      <canvas ref={mainCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'lighten' }} />
 
-      <div className="relative z-10 flex flex-col items-center gap-6 text-center px-6">
+      <div className="relative z-10 flex flex-col items-center gap-6 text-center px-6 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
