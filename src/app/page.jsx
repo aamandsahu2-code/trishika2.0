@@ -118,8 +118,8 @@ function BirthdayFireworksScreen() {
         this.distanceTraveled = 0
         this.coordinates = [[x, y], [x, y], [x, y]]
         this.angle = Math.atan2(targetY - y, targetX - x)
-        this.speed = 1.2
-        this.acceleration = 1.03
+        this.speed = 1.5
+        this.acceleration = 1.05
         this.color = colors[Math.floor(Math.random() * colors.length)]
         this.targetRadius = 1
       }
@@ -165,12 +165,12 @@ function BirthdayFireworksScreen() {
         this.color = color
         this.coordinates = [[x, y], [x, y], [x, y], [x, y], [x, y]]
         this.angle = Math.random() * Math.PI * 2
-        this.speed = (Math.random() * 3 + 0.5) * globalSpeedMultiplier
-        this.friction = 0.97
-        this.gravity = 0.15
+        this.speed = (Math.random() * 4 + 1) * globalSpeedMultiplier
+        this.friction = 0.96
+        this.gravity = 0.2
         this.alpha = 1
-        this.decay = Math.random() * 0.01 + 0.005
-        this.size = Math.random() * 2.5 + 1
+        this.decay = Math.random() * 0.015 + 0.01
+        this.size = Math.random() * 3 + 1
       }
 
       update(index) {
@@ -193,7 +193,7 @@ function BirthdayFireworksScreen() {
         mainCtx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1])
         mainCtx.lineTo(this.x, this.y)
         mainCtx.strokeStyle = `rgba(${rgb}, ${this.alpha})`
-        mainCtx.lineWidth = 1.5
+        mainCtx.lineWidth = 2
         mainCtx.stroke()
 
         trailsCtx.beginPath()
@@ -211,7 +211,7 @@ function BirthdayFireworksScreen() {
     }
 
     function createParticles(x, y, color) {
-      const particleCount = 120
+      const particleCount = 150
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle(x, y, color))
       }
@@ -221,27 +221,24 @@ function BirthdayFireworksScreen() {
       const x = Math.random() * width
       const y = height
       const targetX = Math.random() * width
-      const targetY = Math.random() * (height * 0.4) + 50
+      const targetY = Math.random() * (height * 0.5) + 80
       fireworks.push(new Firework(x, y, targetX, targetY))
     }
 
     function launchFireworkAt(clientX, clientY) {
       const x = Math.random() * width
       const y = height
-      const targetX = clientX
-      const targetY = clientY
-      fireworks.push(new Firework(x, y, targetX, targetY))
+      fireworks.push(new Firework(x, y, clientX, clientY))
     }
 
     function loop() {
-      trailsCtx.globalCompositeOperation = 'source-over'
-      trailsCtx.fillStyle = 'rgba(0, 0, 0, 0.12)'
+      trailsCtx.fillStyle = 'rgba(0, 0, 0, 0.15)'
       trailsCtx.fillRect(0, 0, width, height)
-      trailsCtx.globalCompositeOperation = 'lighter'
 
       mainCtx.clearRect(0, 0, width, height)
 
-      if (Math.random() < 0.03) {
+      // Auto launch
+      if (Math.random() < 0.04) {
         launchRandomFirework()
       }
 
@@ -258,24 +255,25 @@ function BirthdayFireworksScreen() {
       animationId = requestAnimationFrame(loop)
     }
 
-    // Click handler
+    // Click/Touch handlers
     const handleClick = (e) => {
-      launchFireworkAt(e.clientX, e.clientY)
+      const rect = container.getBoundingClientRect()
+      launchFireworkAt(e.clientX - rect.left, e.clientY - rect.top)
     }
 
-    // Touch handler for mobile
     const handleTouch = (e) => {
       e.preventDefault()
+      const rect = container.getBoundingClientRect()
       const touch = e.touches[0] || e.changedTouches[0]
-      launchFireworkAt(touch.clientX, touch.clientY)
+      launchFireworkAt(touch.clientX - rect.left, touch.clientY - rect.top)
     }
 
     container.addEventListener('click', handleClick)
-    container.addEventListener('touchstart', handleTouch)
+    container.addEventListener('touchstart', handleTouch, { passive: false })
 
-    // Initial fireworks burst
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => launchRandomFirework(), i * 500)
+    // Initial burst - more fireworks
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => launchRandomFirework(), i * 400)
     }
 
     let animationId = requestAnimationFrame(loop)
@@ -297,21 +295,33 @@ function BirthdayFireworksScreen() {
   }, [])
 
   return (
-    <div ref={containerRef} className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black cursor-pointer">
-      <canvas ref={trailsCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'lighten' }} />
-      <canvas ref={mainCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'lighten' }} />
+    <div 
+      ref={containerRef} 
+      className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black cursor-pointer"
+      style={{ touchAction: 'none' }}
+    >
+      <canvas 
+        ref={trailsCanvasRef} 
+        className="absolute inset-0" 
+        style={{ pointerEvents: 'none' }}
+      />
+      <canvas 
+        ref={mainCanvasRef} 
+        className="absolute inset-0" 
+        style={{ pointerEvents: 'none' }}
+      />
 
-      <div className="relative z-10 flex flex-col items-center gap-6 text-center px-6 pointer-events-none">
+      <div className="relative z-10 flex flex-col items-center gap-6 text-center px-6" style={{ pointerEvents: 'none' }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1, ease: [0.34, 1.56, 0.64, 1] }}
+          transition={{ duration: 1, delay: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
         >
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-4"
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4"
             style={{ textShadow: '0 0 30px rgba(255,255,255,0.6), 0 0 60px rgba(255,105,180,0.4)' }}>
             🎉 Happy Birthday! 🎉
           </h2>
-          <p className="text-xl md:text-2xl text-white/90 mt-4">
+          <p className="text-lg md:text-2xl text-white/90 mt-4">
             May your day be filled with joy and celebration!
           </p>
         </motion.div>
@@ -319,85 +329,12 @@ function BirthdayFireworksScreen() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2 }}
+          transition={{ duration: 1, delay: 1.5 }}
           className="text-white/70 text-sm mt-8"
         >
           Click anywhere to launch more fireworks! 🎆
         </motion.div>
       </div>
     </div>
-  )
-}
-
-/* ── Progress indicator dots ── */
-function ProgressDots({ current, total }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: current >= 1 && current !== 5 ? 1 : 0 }}
-      transition={{ duration: 0.6, delay: 0.4 }}
-      className="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-50"
-    >
-      {Array.from({ length: total }, (_, i) => (
-        <motion.div
-          key={i}
-          className={`rounded-full transition-all duration-500 ease-out ${
-            i === current ? "dot-active" : i < current ? "dot-active opacity-50" : "dot-inactive"
-          }`}
-          style={{ width: i === current ? 24 : 8, height: 8 }}
-          animate={{ width: i === current ? 24 : 8 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        />
-      ))}
-    </motion.div>
-  )
-}
-
-export default function HomePage() {
-  const [currentScreen, setCurrentScreen] = useState(0)
-
-  const screens = [
-    <LoaderScreen key="loader" onDone={() => setCurrentScreen(1)} />,
-    <IntroScreen key="intro" onNext={() => setCurrentScreen(2)} />,
-    <CakeScreen key="cake" onNext={() => setCurrentScreen(3)} />,
-    <PhotosScreen key="photos" onNext={() => setCurrentScreen(4)} />,
-    <MessageScreen key="message" onNext={() => setCurrentScreen(5)} />,
-    <BirthdayFireworksScreen key="fireworks" />,
-  ]
-
-  const pageVariants = {
-    enter: { opacity: 0, scale: 0.94, filter: "blur(6px)", y: 18 },
-    visible: { opacity: 1, scale: 1, filter: "blur(0px)", y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-    exit: { opacity: 0, scale: 0.96, filter: "blur(3px)", y: -12, transition: { duration: 0.45, ease: [0.4, 0, 1, 1] } },
-  }
-
-  return (
-    <main className="min-h-screen overflow-hidden relative" style={{ background: currentScreen === 5 ? "#000" : "var(--background)" }}>
-      {currentScreen !== 5 && (
-        <>
-          <GlowOrbs />
-          <AmbientParticles />
-        </>
-      )}
-
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4 md:p-6">
-        <AnimatePresence mode="wait">
-          <motion.div key={currentScreen} initial="enter" animate="visible" exit="exit" variants={pageVariants} className="flex items-center justify-center w-full">
-            {screens[currentScreen]}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      <ProgressDots current={currentScreen} total={6} />
-
-      <motion.div
-        initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: currentScreen === 5 ? 0 : 1 }}
-        transition={{ duration: 1, delay: 1 }}
-        className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
-      >
-        @anujbuilds
-      </motion.div>
-    </main>
   )
 }
