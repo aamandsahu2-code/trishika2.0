@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import LoaderScreen from "@/components/screens/LoaderScreen"
 import IntroScreen from "@/components/screens/IntroScreen"
@@ -80,14 +80,12 @@ function GlowOrbs() {
   )
 }
 
-
-
 /* ── Progress indicator dots ── */
 function ProgressDots({ current, total }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: current >= 1 && current !== 5 ? 1 : 0 }}
+      animate={{ opacity: current >= 1 ? 1 : 0 }}
       transition={{ duration: 0.6, delay: 0.4 }}
       className="fixed bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-50"
     >
@@ -114,42 +112,72 @@ export default function HomePage() {
     <IntroScreen key="intro" onNext={() => setCurrentScreen(2)} />,
     <CakeScreen key="cake" onNext={() => setCurrentScreen(3)} />,
     <PhotosScreen key="photos" onNext={() => setCurrentScreen(4)} />,
-    <MessageScreen key="message" onNext={() => setCurrentScreen(5)} />,
-    <BirthdayFireworksScreen key="fireworks" />,
+    <MessageScreen key="message" />,
   ]
 
+  /* staggered transition variants */
   const pageVariants = {
-    enter: { opacity: 0, scale: 0.94, filter: "blur(6px)", y: 18 },
-    visible: { opacity: 1, scale: 1, filter: "blur(0px)", y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-    exit: { opacity: 0, scale: 0.96, filter: "blur(3px)", y: -12, transition: { duration: 0.45, ease: [0.4, 0, 1, 1] } },
+    enter: {
+      opacity: 0,
+      scale: 0.94,
+      filter: "blur(6px)",
+      y: 18,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      filter: "blur(0px)",
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.96,
+      filter: "blur(3px)",
+      y: -12,
+      transition: {
+        duration: 0.45,
+        ease: [0.4, 0, 1, 1],
+      },
+    },
   }
 
   return (
-    <main className="min-h-screen overflow-hidden relative" style={{ background: currentScreen === 5 ? "#000" : "var(--background)" }}>
-      {currentScreen !== 5 && (
-        <>
-          <GlowOrbs />
-          <AmbientParticles />
-        </>
-      )}
+    <main className="min-h-screen overflow-hidden relative" style={{ background: "var(--background)" }}>
+      {/* Ambient atmosphere */}
+      <GlowOrbs />
+      <AmbientParticles />
 
+      {/* Main content */}
       <div className="relative z-10 flex min-h-screen items-center justify-center p-4 md:p-6">
         <AnimatePresence mode="wait">
-          <motion.div key={currentScreen} initial="enter" animate="visible" exit="exit" variants={pageVariants} className="flex items-center justify-center w-full">
+          <motion.div
+            key={currentScreen}
+            initial="enter"
+            animate="visible"
+            exit="exit"
+            variants={pageVariants}
+            className="flex items-center justify-center w-full"
+          >
             {screens[currentScreen]}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      <ProgressDots current={currentScreen} total={6} />
+      {/* Progress dots (visible after loader) */}
+      <ProgressDots current={currentScreen} total={5} />
 
+      {/* Watermark */}
       <motion.div
         initial={{ x: 100, opacity: 0 }}
-        animate={{ x: 0, opacity: currentScreen === 5 ? 0 : 1 }}
+        animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
-        @KD
+        @ your KD
       </motion.div>
     </main>
   )
