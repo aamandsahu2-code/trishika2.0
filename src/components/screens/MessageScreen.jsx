@@ -5,12 +5,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Sparkles } from "lucide-react"
 import Button from "../Button"
 
-/* Word-by-word reveal for the message */
 const messageText = `Happy Birthday, Cutiepie! You deserve all the happiness, love, and smiles in the world today and always. You have this special way of making everything around you brighter — your smile, your kindness, and the way you make people feel truly cared for. I hope your day is filled with laughter, surprises, and moments that make your heart happy. You're truly one of a kind, and I just want you to know how special you are. Keep being the amazing person you are, spreading joy wherever you go. Wishing you endless happiness, success, and all the sweet things life has to offer. 💗`
 
 const words = messageText.split(" ")
 
-/* Hearts that float up after envelope opens */
 const hearts = [
   { emoji: "💖", left: "8%",  delay: 0.6 },
   { emoji: "💗", left: "25%", delay: 0.85 },
@@ -24,6 +22,19 @@ const hearts = [
 
 export default function MessageScreen({ onNext }) {
   const [opened, setOpened] = useState(false)
+  const [showHearts, setShowHearts] = useState(false)
+
+  const handleCardClick = () => {
+    if (!opened) {
+      // Pehli baar open ho raha hai
+      setOpened(true)
+      setTimeout(() => setShowHearts(true), 500)
+    } else {
+      // Dobara close ho raha hai
+      setShowHearts(false)
+      setTimeout(() => setOpened(false), 300)
+    }
+  }
 
   return (
     <motion.div
@@ -63,14 +74,7 @@ export default function MessageScreen({ onNext }) {
         transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         className="text-center"
       >
-        <h2 className="shimmer-text text-2xl md:text-3xl font-semibold text-center" style={{
-          background: "linear-gradient(105deg, var(--primary) 0%, #bf4fa0 30%, #ffd6ec 50%, #bf4fa0 70%, var(--primary) 100%)",
-          backgroundSize: "200% auto",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          animation: "shimmerSlide 3s linear infinite",
-        }}>
+        <h2 className="shimmer-text text-2xl md:text-3xl font-semibold text-center">
           A Special Message
         </h2>
         <motion.p
@@ -78,70 +82,88 @@ export default function MessageScreen({ onNext }) {
           animate={{ opacity: opened ? 0 : 1 }}
           transition={{ duration: 0.4 }}
         >
-          Tap to open
+          {opened ? "Tap to close" : "Tap to open"}
         </motion.p>
       </motion.div>
 
-      {/* Envelope card */}
+      {/* Envelope card - NOW TOGGLEABLE */}
       <motion.div
         initial={{ opacity: 0, y: 16, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.65, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        onClick={() => setOpened(true)}
+        onClick={handleCardClick}
         className={`relative h-71.25 w-full rounded-[40px] overflow-hidden shadow-inner cursor-pointer transition-all bg-linear-to-b from-white/80 to-pink-200 flex items-center justify-center max-w-71.25 ${!opened ? "hover:scale-[1.015]" : ""}`}
         style={{ transition: "transform 0.3s ease" }}
       >
-        {/* Cover (envelope) */}
+        {/* Cover (envelope) - TOGGLE BASED ON opened STATE */}
         <AnimatePresence>
-         {!opened && (
-  <motion.div
-    className="cover"
-    style={{ 
-      background: "url('/images/KD NOPE.jpg') no-repeat center / cover",
-      zIndex: 10 
-    }}
-    // ... rest of the code
-  >
-    <motion.div
-      animate={{ scale: [1, 1.08, 1] }}
-      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      className="text-4xl select-none"
-    >
-      {/* Optional: Emoji hide kar sakte hain */}
-      {/* 💌 */}
-    </motion.div>
-  </motion.div>
-)}
+          {!opened && (
+            <motion.div
+              className="cover"
+              style={{ 
+                background: "url('/images/KD NOPE.jpg') no-repeat center / cover",
+                zIndex: 10 
+              }}
+              initial={{ opacity: 1, scale: 1 }}
+              exit={{
+                opacity: 0,
+                scale: 1.08,
+                filter: "blur(2px)",
+              }}
+              transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+            >
+              {/* Envelope icon hint */}
+              <motion.div
+                animate={{ scale: [1, 1.08, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="text-4xl select-none"
+              >
+                💌
+              </motion.div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
-        {/* Message content — word-by-word stagger */}
-        <div className="relative px-6 h-56 overflow-y-auto text-foreground leading-relaxed">
-          <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-            {words.map((word, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
-                animate={opened ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
-                transition={{
-                  duration: 0.4,
-                  delay: opened ? 0.45 + i * 0.028 : 0,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="will-change-transform"
-              >
-                {word}
-              </motion.span>
-            ))}
-          </div>
-        </div>
-
-        {/* Inner glow after open */}
+        {/* Message content - TOGGLE BASED ON opened STATE */}
         <AnimatePresence>
           {opened && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="relative px-6 h-56 overflow-y-auto text-foreground leading-relaxed"
+            >
+              <div className="flex flex-wrap gap-x-1.5 gap-y-0">
+                {words.map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: i * 0.02,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="will-change-transform"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Inner glow - TOGGLE BASED ON opened STATE */}
+        <AnimatePresence>
+          {opened && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
               className="absolute inset-0 pointer-events-none rounded-[40px]"
               style={{
                 background: "radial-gradient(ellipse at 50% 20%, rgba(255,180,200,0.18), transparent 60%)",
@@ -151,15 +173,16 @@ export default function MessageScreen({ onNext }) {
         </AnimatePresence>
       </motion.div>
 
-      {/* Floating hearts burst after open */}
+      {/* Floating hearts - ONLY WHEN opened AND showHearts */}
       <AnimatePresence>
-        {opened && hearts.map((h, i) => (
+        {showHearts && hearts.map((h, i) => (
           <motion.div
             key={i}
             className="absolute pointer-events-none select-none"
             style={{ left: h.left, bottom: "-10px", fontSize: 18 + (i % 3) * 6 }}
             initial={{ opacity: 0, y: 0, scale: 0 }}
             animate={{ opacity: [0, 1, 1, 0], y: [-200 - Math.random() * 80], scale: [0, 1.2, 1, 0.6] }}
+            exit={{ opacity: 0 }}
             transition={{
               duration: 2.8,
               delay: h.delay,
@@ -172,12 +195,13 @@ export default function MessageScreen({ onNext }) {
         ))}
       </AnimatePresence>
 
-      {/* Bottom sparkle accent + NEXT BUTTON */}
+      {/* Next button - ALWAYS VISIBLE BUT CONDITIONAL */}
       <AnimatePresence>
         {opened && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.8, delay: 1.5 }}
             className="text-center mt-1 flex flex-col items-center gap-4"
           >
@@ -189,10 +213,10 @@ export default function MessageScreen({ onNext }) {
               💖
             </motion.span>
 
-            {/* Next Button to Fireworks */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.6, delay: 2.5, ease: [0.34, 1.56, 0.64, 1] }}
             >
               <Button
