@@ -52,6 +52,62 @@ function AmbientParticles() {
   )
 }
 
+/* ── Floating Stars Background ── */
+function FloatingStars() {
+  const stars = [
+    { left: '10%', delay: '0s' },
+    { left: '25%', delay: '2s' },
+    { left: '40%', delay: '4s' },
+    { left: '55%', delay: '1s' },
+    { left: '70%', delay: '3s' },
+    { left: '85%', delay: '5s' },
+  ]
+
+  return (
+    <>
+      <style jsx>{`
+        .float-star {
+          position: absolute;
+          bottom: -10px;
+          color: white;
+          font-size: 18px;
+          animation: floatStar 10s linear infinite;
+          opacity: 0.8;
+          pointer-events: none;
+          z-index: 1;
+        }
+        
+        @keyframes floatStar {
+          0% {
+            transform: translateY(0) scale(0.8);
+            opacity: 0;
+          }
+          20% { 
+            opacity: 1; 
+          }
+          100% {
+            transform: translateY(-120vh) scale(1.4);
+            opacity: 0;
+          }
+        }
+      `}</style>
+      
+      {stars.map((star, i) => (
+        <div
+          key={i}
+          className="float-star"
+          style={{
+            left: star.left,
+            animationDelay: star.delay,
+          }}
+        >
+          ⭐
+        </div>
+      ))}
+    </>
+  )
+}
+
 /* ── Ambient glow orbs ── */
 function GlowOrbs() {
   return (
@@ -147,6 +203,9 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen overflow-hidden relative" style={{ background: "var(--background)" }}>
+      {/* Floating Stars Background */}
+      <FloatingStars />
+
       {/* Ambient atmosphere */}
       <GlowOrbs />
       <AmbientParticles />
@@ -177,7 +236,7 @@ export default function HomePage() {
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
-        @ your KD
+        @anujbuilds
       </motion.div>
     </main>
   )
