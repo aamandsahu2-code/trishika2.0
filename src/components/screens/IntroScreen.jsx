@@ -68,7 +68,7 @@ export default function IntroScreen({ onNext }) {
       {/* Illustration box - Adjusted for centered square image */}
       <motion.div
         variants={childVariants}
-        className="relative h-44 md:h-52 w-[85%] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[40px] flex items-center justify-center shadow-inner overflow-hidden"
+        className="relative w-[280px] h-[360px] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[40px] flex items-center justify-center shadow-inner overflow-hidden"
       >
         {/* Inner glow highlight */}
         <motion.div
@@ -85,8 +85,7 @@ export default function IntroScreen({ onNext }) {
           loading="lazy"
           src="/gifs/intro.jpg"
           alt="Cute"
-          // Aspect-square aur fixed height/width se 1:1 ratio aayega
-          className="h-[80%] aspect-square object-cover rounded-2xl relative z-10 shadow-sm"
+          className="w-full h-full object-cover rounded-2xl relative z-10 shadow-sm"
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
