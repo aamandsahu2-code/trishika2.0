@@ -42,13 +42,13 @@ export default function MessageScreen({ onNext }) {
       </motion.div>
 
       {/* BOX CONTAINER - FIXED SIZE, NO ANIMATION */}
-      <div className="relative h-71.25 w-full max-w-71.25 rounded-[40px] overflow-hidden shadow-inner bg-linear-to-b from-white/80 to-pink-200">
+      <div className="relative h-71.25 w-full max-w-[450px] rounded-[40px] overflow-hidden shadow-inner bg-linear-to-b from-white/80 to-pink-200">
         
         {/* CARD (IMAGE) - SLIDES LEFT WHEN CLICKED */}
         <motion.div
           initial={{ x: 0 }}
           animate={{ 
-            x: opened ? -280 : 0,
+            x: opened ? -450 : 0,
             opacity: opened ? 0 : 1
           }}
           transition={{ 
@@ -58,7 +58,7 @@ export default function MessageScreen({ onNext }) {
           onClick={() => setOpened(true)}
           className="absolute top-0 left-0 h-full w-full cursor-pointer"
           style={{ 
-            backgroundImage: "url('/images/KD NOPE.jpg')",
+            backgroundImage: "url('/images/KD NOPE.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             zIndex: 10
