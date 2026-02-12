@@ -4,21 +4,21 @@ import { motion } from "framer-motion"
 import { Gift } from "lucide-react"
 import Button from "../Button"
 
-/* Stagger container + children */
+/* Stagger container + children - optimized for mobile */
 const containerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.14, delayChildren: 0.15 },
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 }, // Reduced from 0.14
   },
 }
 
 const childVariants = {
-  hidden: { opacity: 0, y: 22, scale: 0.95 },
+  hidden: { opacity: 0, y: 15, scale: 0.97 }, // Reduced values
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }, // Reduced from 0.6
   },
 }
 
