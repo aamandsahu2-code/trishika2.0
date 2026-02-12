@@ -37,7 +37,7 @@ export default function IntroScreen({ onNext }) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="bg-[#fff8fc] p-7 rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-110 relative flex flex-col items-center gap-4 card-glow overflow-hidden"
+      className="bg-[#fff8fc] p-4 sm:p-7 rounded-[40px] sm:rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-100 sm:max-w-110 relative flex flex-col items-center gap-4 card-glow overflow-hidden"
     >
       {/* Floating decorative emojis */}
       {floaters.map((f, i) => (
@@ -68,7 +68,7 @@ export default function IntroScreen({ onNext }) {
       {/* Illustration box - Adjusted for centered square image */}
       <motion.div
         variants={childVariants}
-        className="relative w-[280px] h-[360px] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[40px] flex items-center justify-center shadow-inner overflow-hidden"
+        className="relative w-[280px] h-[360px] sm:w-[320px] sm:h-[410px] mx-auto bg-linear-to-b from-white/80 to-pink-200 rounded-[30px] sm:rounded-[40px] flex items-center justify-center shadow-inner overflow-hidden"
       >
         {/* Inner glow highlight */}
         <motion.div
@@ -95,7 +95,7 @@ export default function IntroScreen({ onNext }) {
       {/* Text block */}
       <motion.div variants={childVariants} className="text-center px-2">
         <h1
-          className="shimmer-text text-2xl md:text-3xl font-semibold leading-tight"
+          className="shimmer-text text-xl sm:text-2xl md:text-3xl font-semibold leading-tight"
         >
           A Princess was born today, 19 years ago!
         </h1>
