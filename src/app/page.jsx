@@ -9,7 +9,7 @@ import PhotosScreen from "@/components/screens/PhotosScreen"
 import MessageScreen from "@/components/screens/MessageScreen"
 
 /* ── Ambient particle config ── */
-const PARTICLE_COUNT = 18
+const PARTICLE_COUNT = 8 // Reduced from 18 for mobile performance
 const PARTICLE_COLORS = [
   "rgba(255,143,171,0.7)",
   "rgba(233,168,255,0.6)",
@@ -20,16 +20,22 @@ const PARTICLE_COLORS = [
 ]
 
 function AmbientParticles() {
-  const [particles] = useState(() =>
-    Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+  const [particles] = useState(() => {
+    // Use a seeded random function for deterministic values
+    const seededRandom = (seed) => {
+      const x = Math.sin(seed) * 10000
+      return x - Math.floor(x)
+    }
+    
+    return Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
       id: i,
-      left: Math.random() * 100,
-      size: 4 + Math.random() * 10,
-      duration: 8 + Math.random() * 12,
-      delay: Math.random() * -15,
+      left: Math.round(seededRandom(i) * 100 * 100) / 100, // Round to 2 decimal places
+      size: Math.round((4 + seededRandom(i + 100) * 10) * 100) / 100,
+      duration: Math.round((8 + seededRandom(i + 200) * 12) * 100) / 100,
+      delay: Math.round(seededRandom(i + 300) * -15 * 100) / 100,
       color: PARTICLE_COLORS[i % PARTICLE_COLORS.length],
     }))
-  )
+  })
 
   return (
     <>
@@ -45,6 +51,7 @@ function AmbientParticles() {
             animationDuration: `${p.duration}s`,
             animationDelay: `${p.delay}s`,
             boxShadow: `0 0 ${p.size * 1.5}px ${p.color}`,
+            willChange: 'transform', // Optimize for mobile
           }}
         />
       ))}
@@ -171,13 +178,13 @@ export default function HomePage() {
     <MessageScreen key="message" />,
   ]
 
-  /* staggered transition variants */
+  /* staggered transition variants - simplified for mobile */
   const pageVariants = {
     enter: {
       opacity: 0,
-      scale: 0.94,
-      filter: "blur(6px)",
-      y: 18,
+      scale: 0.96,
+      filter: "blur(4px)",
+      y: 12,
     },
     visible: {
       opacity: 1,
@@ -185,17 +192,17 @@ export default function HomePage() {
       filter: "blur(0px)",
       y: 0,
       transition: {
-        duration: 0.7,
+        duration: 0.4, // Reduced from 0.7
         ease: [0.22, 1, 0.36, 1],
       },
     },
     exit: {
       opacity: 0,
-      scale: 0.96,
-      filter: "blur(3px)",
-      y: -12,
+      scale: 0.98,
+      filter: "blur(2px)",
+      y: -8,
       transition: {
-        duration: 0.45,
+        duration: 0.3, // Reduced from 0.45
         ease: [0.4, 0, 1, 1],
       },
     },
@@ -211,7 +218,7 @@ export default function HomePage() {
       <AmbientParticles />
 
       {/* Main content */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4 md:p-6">
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-2 sm:p-4 md:p-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}
@@ -236,7 +243,7 @@ export default function HomePage() {
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
-        @anujbuilds
+        @KD
       </motion.div>
     </main>
   )
