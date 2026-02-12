@@ -20,7 +20,7 @@ export default function MessageScreen({ onNext }) {
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-[#fff8fc] p-7 rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-110 relative flex flex-col items-center gap-6 my-10 card-glow overflow-hidden"
+      className="bg-[#fff8fc] p-4 sm:p-7 rounded-[40px] sm:rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-100 sm:max-w-110 relative flex flex-col items-center gap-4 sm:gap-6 my-10 card-glow overflow-hidden"
     >
       {/* Header */}
       <motion.div
@@ -42,7 +42,7 @@ export default function MessageScreen({ onNext }) {
       </motion.div>
 
       {/* BOX CONTAINER - FIXED SIZE, NO ANIMATION */}
-      <div className="relative h-71.25 w-full max-w-[450px] rounded-[40px] overflow-hidden shadow-inner bg-linear-to-b from-white/80 to-pink-200">
+      <div className="relative h-64 sm:h-80 md:h-71.25 w-full max-w-[320px] sm:max-w-[400px] md:max-w-[450px] rounded-[30px] sm:rounded-[40px] overflow-hidden shadow-inner bg-linear-to-b from-white/80 to-pink-200">
         
         {/* CARD (IMAGE) - SLIDES LEFT WHEN CLICKED */}
         <motion.div
