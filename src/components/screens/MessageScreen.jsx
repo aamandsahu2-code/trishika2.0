@@ -2,157 +2,176 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Autoplay, EffectFade } from "swiper/modules"
-import "swiper/css"
-import "swiper/css/effect-fade"
-import { Mail } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import Button from "../Button"
 
-const photos = [
-  "/images/1.jpg",
-  "/images/2.jpg",
-  "/images/3.jpg",
-  "/images/4.jpg",
-]
+// ✅ CORRECT - Use template literals with backticks for multi-line
+const messageText = `Happy Birthday, Princess!
+You deserve all the happiness and smiles in the world today. You have a truly special way of making everything around you brighter just by being yourself. I hope your day is filled with laughter, surprises, and all the things that make your heart happy.
+Keep being the amazing person you are and spreading joy wherever you go. Wishing you endless success and a year as wonderful as you are! ✨`
 
-/* Stagger variants */
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.13, delayChildren: 0.1 } },
-}
-const childVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.96 },
-  visible: {
-    opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
-}
+const words = messageText.split(" ")
 
-export default function PhotosScreen({ onNext }) {
-  const [activeIndex, setActiveIndex] = useState(0)
+export default function MessageScreen({ onNext }) {
+  const [opened, setOpened] = useState(false)
 
   return (
     <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="bg-[#fff8fc] p-7 rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-110 relative flex flex-col items-center gap-4 my-10 card-glow overflow-hidden"
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-[#fff8fc] p-4 sm:p-7 rounded-[40px] sm:rounded-[60px] drop-shadow-2xl min-w-48 w-full max-w-100 sm:max-w-110 relative flex flex-col items-center gap-4 sm:gap-6 my-10 card-glow overflow-hidden"
     >
-      {/* Floating decorations */}
-      {[
-        { emoji: "📸", top: "4%", left: "7%", delay: 0.2 },
-        { emoji: "💜", top: "5%", right: "8%", delay: 0.5 },
-        { emoji: "✨", bottom: "12%", left: "5%", delay: 0.7 },
-        { emoji: "🌟", bottom: "8%", right: "6%", delay: 0.4 },
-      ].map((d, i) => (
-        <motion.div
-          key={i}
-          className="absolute pointer-events-none text-base select-none"
-          style={{ top: d.top, left: d.left, right: d.right, bottom: d.bottom }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 0.4, scale: 1 }}
-          transition={{ duration: 0.6, delay: d.delay, ease: [0.34, 1.56, 0.64, 1] }}
-        >
-          <motion.span
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 3.8 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
-          >
-            {d.emoji}
-          </motion.span>
-        </motion.div>
-      ))}
-
       {/* Header */}
-      <motion.div variants={childVariants} className="text-center">
-        <h2 className="shimmer-text text-2xl md:text-3xl font-semibold" style={{
-          background: "linear-gradient(105deg, var(--accent) 0%, #7c5cbf 30%, #c9b8ff 50%, #7c5cbf 70%, var(--accent) 100%)",
-          backgroundSize: "200% auto",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          animation: "shimmerSlide 3s linear infinite",
-        }}>
-          Some Sweet Moments
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center"
+      >
+        <h2 className="shimmer-text text-2xl md:text-3xl font-semibold text-center">
+          A Special Message
         </h2>
-        <p className="text-sm text-accent/60 mt-1.5">(Swipe for more)</p>
+        <motion.p
+          className="text-primary/60 text-sm mt-1"
+          animate={{ opacity: opened ? 0 : 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          Tap to open
+        </motion.p>
       </motion.div>
 
-      {/* Photo carousel box */}
-      <motion.div
-        variants={childVariants}
-        className="relative p-6 bg-linear-to-b from-white/80 to-violet-200 w-full rounded-[40px] flex flex-col items-center justify-center shadow-inner"
-      >
-        {/* Inner ambient glow */}
+      {/* BOX CONTAINER - FIXED SIZE, NO ANIMATION */}
+      <div className="relative h-64 sm:h-80 md:h-71.25 w-full max-w-[320px] sm:max-w-[400px] md:max-w-[450px] rounded-[30px] sm:rounded-[40px] overflow-hidden shadow-inner bg-linear-to-b from-white/80 to-pink-200">
+        
+        {/* CARD (IMAGE) - SLIDES LEFT WHEN CLICKED */}
+        <motion.div
+          initial={{ x: 0 }}
+          animate={{ 
+            x: opened ? -450 : 0,
+            opacity: opened ? 0 : 1
+          }}
+          transition={{ 
+            duration: 0.5,
+            ease: "easeInOut" 
+          }}
+          onClick={() => setOpened(true)}
+          className="absolute top-0 left-0 h-full w-full cursor-pointer"
+          style={{ 
+            backgroundImage: "url('/images/KD NOPE.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            zIndex: 10
+          }}
+        >
+          {/* SIRF IMAGE */}
+        </motion.div>
+
+        {/* MESSAGE - HIDDEN BY DEFAULT, SHOWS WHEN CARD SLIDES */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="absolute inset-0 rounded-[40px] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at 50% 60%, rgba(167,139,250,0.15), transparent 65%)",
+          animate={{ 
+            opacity: opened ? 1 : 0
           }}
-        />
+          transition={{ 
+            duration: 0.4,
+            delay: opened ? 0.2 : 0
+          }}
+          onClick={() => setOpened(false)}
+          className="absolute top-0 left-0 h-full w-full cursor-pointer p-6"
+          style={{ 
+            zIndex: opened ? 20 : 5 
+          }}
+        >
+          {/* Message content */}
+          <div className="h-full overflow-y-auto text-foreground leading-relaxed">
+            <div className="flex flex-wrap gap-x-1.5 gap-y-2">
+              {words.map((word, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ 
+                    opacity: opened ? 1 : 0,
+                    y: opened ? 0 : 5
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    delay: opened ? 0.4 + (i * 0.02) : 0
+                  }}
+                  className="will-change-transform"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+          
+          {/* Inner glow */}
+          <AnimatePresence>
+            {opened && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.3 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse at 50% 20%, rgba(255,180,200,0.25), transparent 60%)",
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
+        
+      </div>
 
-        <div className="relative z-10">
-          <Swiper
-            effect="fade"
-            modules={[EffectFade, Autoplay]}
-            autoplay={{ delay: 3200, disableOnInteraction: false }}
-            className="w-53.75 h-70 md:w-59.25 md:h-77.5"
-            onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-          >
-            {photos.map((src, i) => (
-              <SwiperSlide key={i}>
-                <motion.div className="h-full w-full rounded-3xl overflow-hidden">
-                  <div className="relative h-full w-full rounded-2xl overflow-hidden">
-                    <img
-                      loading="lazy"
-                      src={src}
-                      alt={`Memory ${i + 1}`}
-                      className="h-full w-full rounded-2xl object-contain"
-                    />
-                    {/* Subtle vignette overlay */}
-                    <div
-                      className="absolute inset-0 rounded-2xl pointer-events-none"
-                      style={{
-                        background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.12) 100%)",
-                      }}
-                    />
-                  </div>
-                </motion.div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-
-        {/* Slide indicator dots */}
-        <div className="flex gap-2 mt-4 relative z-10">
-          {photos.map((_, i) => (
-            <motion.div
-              key={i}
-              className="rounded-full transition-all duration-400 ease-out"
-              style={{
-                height: 6,
-                background: i === activeIndex ? "var(--accent)" : "rgba(89,75,160,0.22)",
-                boxShadow: i === activeIndex ? "0 0 8px rgba(89,75,160,0.4)" : "none",
-              }}
-              animate={{ width: i === activeIndex ? 22 : 6 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-            />
-          ))}
-        </div>
-      </motion.div>
-
-      {/* CTA */}
-      <motion.div variants={childVariants} className="mt-4 flex justify-center">
-        <Button onClick={onNext} className="bg-[#ddd6ff] text-accent relative overflow-hidden group">
-          <span
+      {/* NEXT BUTTON - ALWAYS VISIBLE */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="mt-4"
+      >
+        <Button
+          onClick={onNext}
+          className="bg-gradient-to-r from-pink-400 to-purple-500 text-white relative overflow-hidden group px-10"
+        >
+          <motion.span
+            animate={{ 
+              x: [0, 3, 0]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
             className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-500 pointer-events-none"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)" }}
+            style={{ 
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" 
+            }}
           />
-          <Mail size={18} className="relative z-10" />
-          <span className="relative z-10">Open My Message</span>
+          
+          <span className="relative z-10 flex items-center gap-2">
+            <span>Next</span>
+            <ChevronRight size={18} />
+          </span>
+          
+          {/* Pulsing glow effect */}
+          <motion.div
+            className="absolute inset-0 rounded-full"
+            animate={{
+              boxShadow: [
+                "0 0 0px rgba(255, 107, 138, 0)",
+                "0 0 20px rgba(255, 107, 138, 0.5)",
+                "0 0 0px rgba(255, 107, 138, 0)"
+              ]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </Button>
       </motion.div>
     </motion.div>
