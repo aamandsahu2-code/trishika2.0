@@ -237,7 +237,7 @@ export default function HomePage() {
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
-        @anujbuilds
+        @kd
       </motion.div>
     </main>
   )
