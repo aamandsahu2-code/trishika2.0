@@ -4,32 +4,28 @@ import { motion } from "framer-motion"
 import { Gift } from "lucide-react"
 import Button from "../Button"
 
-/* Stagger container + children - optimized for mobile */
+/* Stagger container + children - minimal for mobile */
 const containerVariants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 }, // Reduced from 0.14
+    transition: { staggerChildren: 0.02, delayChildren: 0 }, // Almost instant
   },
 }
 
 const childVariants = {
-  hidden: { opacity: 0, y: 15, scale: 0.97 }, // Reduced values
+  hidden: { opacity: 0, y: 8 }, // Minimal movement
   visible: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }, // Reduced from 0.6
+    transition: { duration: 0.2, ease: "easeOut" }, // Very fast
   },
 }
 
-/* Floating decoration positions */
+/* Floating decoration positions - reduced for mobile */
 const floaters = [
-  { emoji: "💖", top: "6%",  left: "8%",  delay: 0.3, duration: 4.2 },
-  { emoji: "✨", top: "4%",  right: "10%", delay: 0.6, duration: 3.6 },
-  { emoji: "🌸", bottom: "12%", left: "6%",  delay: 0.9, duration: 5.0 },
-  { emoji: "💫", bottom: "8%",  right: "7%", delay: 0.5, duration: 4.6 },
-  { emoji: "🎀", top: "30%", left: "2%",  delay: 1.0, duration: 4.8 },
-]
+  { emoji: "💖", top: "6%",  left: "8%", delay: 0.3, duration: 4.2 },
+  { emoji: "✨", top: "4%", right: "10%", delay: 0.6, duration: 3.6 },
+] // Reduced from 5 to 2 floaters
 
 export default function IntroScreen({ onNext }) {
   return (
@@ -86,9 +82,9 @@ export default function IntroScreen({ onNext }) {
           src="/gifs/intro.jpg"
           alt="Cute"
           className="w-full h-full object-cover rounded-2xl relative z-10 shadow-sm"
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+          initial={{ opacity: 0 }} // Removed scale animation
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15, ease: "easeOut" }} // Very fast
         />
       </motion.div>
 
