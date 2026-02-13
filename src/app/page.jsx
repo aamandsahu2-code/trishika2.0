@@ -9,7 +9,7 @@ import PhotosScreen from "@/components/screens/PhotosScreen"
 import MessageScreen from "@/components/screens/MessageScreen"
 
 /* ── Ambient particle config ── */
-const PARTICLE_COUNT = 8 // Reduced from 18 for mobile performance
+const PARTICLE_COUNT = 4 // Further reduced for mobile performance
 const PARTICLE_COLORS = [
   "rgba(255,143,171,0.7)",
   "rgba(233,168,255,0.6)",
@@ -178,32 +178,26 @@ export default function HomePage() {
     <MessageScreen key="message" />,
   ]
 
-  /* staggered transition variants - simplified for mobile */
+  /* staggered transition variants - minimal for mobile */
   const pageVariants = {
     enter: {
       opacity: 0,
-      scale: 0.96,
-      filter: "blur(4px)",
-      y: 12,
+      y: 8,
     },
     visible: {
       opacity: 1,
-      scale: 1,
-      filter: "blur(0px)",
       y: 0,
       transition: {
-        duration: 0.4, // Reduced from 0.7
-        ease: [0.22, 1, 0.36, 1],
+        duration: 0.2, // Very fast
+        ease: "easeOut",
       },
     },
     exit: {
       opacity: 0,
-      scale: 0.98,
-      filter: "blur(2px)",
-      y: -8,
+      y: -4,
       transition: {
-        duration: 0.3, // Reduced from 0.45
-        ease: [0.4, 0, 1, 1],
+        duration: 0.15, // Very fast
+        ease: "easeIn",
       },
     },
   }
@@ -243,7 +237,7 @@ export default function HomePage() {
         transition={{ duration: 1, delay: 1 }}
         className="fixed bottom-4 right-4 text-sm text-black/40 pointer-events-none z-50 font-light"
       >
-        @KD
+        @anujbuilds
       </motion.div>
     </main>
   )
